@@ -161,17 +161,5 @@ edge-hearing-aid-dsp/
 
 ---
 
-## 📜 How to Reference in Academic Applications / CV
-
-> **Real-Time Digital Hearing Aid & Acoustic DSP Pipeline**
-> *Developed an ultra-low latency audio signal processing system for digital hearing aids with speech enhancement, adaptive feedback cancellation, and clinical audiogram equalization.*
-> * Implemented Normalized Least Mean Squares (NLMS) adaptive filtering for continuous acoustic feedback cancellation, eliminating unstable howling without speech distortion.
-> * Formulated a multi-band IIR filterbank (250–6000 Hz) using the NAL-R prescription rule paired with Wide Dynamic Range Compression (WDRC) to mitigate loudness recruitment.
-> * Designed frequency-domain spectral subtraction to suppress ambient background noise while preserving speech intelligibility.
-> * Engineered a standalone ANSI C99 firmware header (4.0 KB, zero-malloc) and benchmarked real-time performance on constrained hardware: **0.805 ms frame latency** (<10 ms medical budget) and **<95 MB RAM**.
-> * Interactive Dashboard & Source: `https://github.com/hnosrati0-source/edge-hearing-aid-dsp`
-
----
-
 ## ⚖️ License & Ethical Disclosure
 This project is licensed under the **MIT License**. It is strictly developed for **civilian audiology, assistive healthcare technology, and academic research**.
