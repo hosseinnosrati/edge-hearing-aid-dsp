@@ -1,27 +1,27 @@
-# 🦻 Edge-Hearing-Aid-DSP: Real-Time Embedded Audio & Speech Processing Pipeline
+# Edge-Hearing-Aid-DSP: Real-Time Audio DSP and Speech Enhancement Pipeline
 
 [![Python](https://img.shields.io/badge/Python-3.9%20%7C%203.10%20%7C%203.13-blue.svg)](https://www.python.org/)
-[![Embedded C](https://img.shields.io/badge/Firmware-ANSI%20C99%20(Zero--Malloc)-purple.svg)](models/hearing_aid_dsp.h)
-[![Dashboard](https://img.shields.io/badge/UI-Interactive%20Streamlit%20App-ff4b4b.svg)](app.py)
-[![Audio](https://img.shields.io/badge/Audio-16%20kHz%20Wideband-success.svg)]()
-[![Latency](https://img.shields.io/badge/Latency-0.8%20ms%20%2F%20Frame-orange.svg)]()
+[![Firmware](https://img.shields.io/badge/Firmware-ANSI%20C99%20(Zero--Malloc)-purple.svg)](models/hearing_aid_dsp.h)
+[![Audio](https://img.shields.io/badge/Audio-16%20kHz%20Wideband-blue.svg)]()
+[![Frame Latency](https://img.shields.io/badge/Latency-0.8%20ms%20%2F%20Frame-green.svg)]()
+[![UI](https://img.shields.io/badge/UI-Streamlit%20Dashboard-red.svg)](app.py)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
-A high-performance, real-time **Digital Signal Processing (DSP)** and **Embedded Audio** pipeline simulating clinical hearing aid architectures. Engineered to satisfy strict medical latency constraints (**< 10 ms acoustic budget**) on low-power edge microprocessors and digital signal processors.
+A real-time **Digital Signal Processing (DSP)** and embedded audio pipeline implementing clinical hearing aid architectures. Engineered to satisfy strict medical acoustic latency constraints (**< 10 ms budget**) on low-power edge microprocessors and digital signal processors.
 
 ---
 
-## 📌 Cross-Disciplinary Academic Scope
+## Background & Acoustic Design Constraints
 
-This project addresses fundamental challenges across three academic disciplines:
+Digital hearing aid design must overcome three primary acoustic and physiological challenges:
 
-* **Biomedical Engineering (Audiology & Neurosensory):** Clinical audiogram curve fitting (NAL-R prescription rule), sensorineural presbycusis compensation, and Wide Dynamic Range Compression (WDRC) to mitigate recruitment and protect cochlear hair cells.
-* **Electrical & Telecommunications (Acoustic DSP):** Normalized Least Mean Squares (**NLMS**) adaptive filtering for acoustic feedback cancellation, Short-Time Fourier Transform (**STFT**) spectral subtraction, and sub-band IIR filterbank decomposition.
-* **Electrical & Computer Engineering (Embedded Systems):** Ultra-low frame latency (**0.805 ms** per 128-sample frame), zero dynamic allocation (**zero-malloc**) ANSI C99 firmware exporter (**4.0 KB header**), and <95 MB memory footprint.
+1. **Strict Latency Budget (< 10 ms):** Acoustic delay between natural bone-conducted sound and amplified ear-canal acoustic output exceeding 10 ms causes disturbing comb-filtering distortion and echo. The pipeline operates on 8.0 ms (128-sample) frames with sub-millisecond execution times.
+2. **Acoustic Feedback Cancellation (AFC):** Due to tight coupling between the ear-canal loudspeaker and microphone, acoustic leakage triggers unstable limit-cycle oscillations (whistling/howling). An adaptive **Normalized Least Mean Squares (NLMS)** filter continuously models the time-varying acoustic feedback path to subtract feedback before howling occurs.
+3. **Sensorineural Hearing Loss & Loudness Recruitment:** In presbycusis, damaged outer hair cells reduce the dynamic range between hearing threshold and loudness discomfort. **Wide Dynamic Range Compression (WDRC)** dynamically amplifies soft speech while compressing loud transients, shaped by clinical **NAL-R prescription curves** across a multi-band IIR filterbank.
 
 ---
 
-## 🏗️ System Architecture
+## Architecture
 
 ```mermaid
 flowchart TD
@@ -37,65 +37,61 @@ flowchart TD
     D2 --> E["Stage 4: Dynamic Range Compression (WDRC)"]
     E --> E1["Dual-Time-Constant Envelope Detector<br/>(Fast Attack: 5ms, Smooth Release: 50ms)"]
     E1 --> E2["Nonlinear Compression Curve + MPO Limiter<br/>Amplifies soft consonants & prevents loud trauma"]
-    E2 --> F["Loudspeaker Output Signal 🔊"]
+    E2 --> F["Loudspeaker Output Signal"]
 ```
 
 ---
 
-## 📊 Live Visual Spectrogram Pipeline
+## Spectrogram & Signal Processing Pipeline
 
 Evaluation on wideband benchmark speech corrupted by ambient noise and acoustic feedback whistling:
 
 ![Hearing Aid Spectrogram Pipeline](assets/demo_hearing_aid_spectrogram.png)
 
-1. **Top Spectrogram:** Raw corrupted microphone signal with persistent 60 Hz hum, wideband pink background noise, and acoustic feedback howling.
+1. **Top Spectrogram:** Raw microphone signal with persistent 60 Hz hum, wideband pink background noise, and acoustic feedback howling.
 2. **Middle Curve:** Clinical audiogram matching patient hearing threshold (dB HL) and corresponding prescribed NAL-R insertion gains.
-3. **Bottom Spectrogram:** Processed hearing aid audio displaying eliminated whistling, suppressed background noise, and restored high-frequency speech harmonics (2000–6000 Hz).
+3. **Bottom Spectrogram:** Processed hearing aid audio displaying eliminated feedback howling, suppressed background noise, and restored high-frequency speech harmonics (2000–6000 Hz).
 
 ---
 
-## ⚡ Edge Hardware Benchmark Results
+## Experimental Benchmarks
 
-Benchmarked directly on a constrained **Intel Pentium Dual-Core T2330 @ 1.60 GHz** (legacy 64-bit architecture):
+Benchmarked on an **Intel Pentium Dual-Core T2330 @ 1.60 GHz**:
 
-| Benchmark Metric | Measured Result | Clinical / Architectural Significance |
-| :--- | :---: | :--- |
+| Metric | Measured Value | Standard / Constraint |
+| :--- | :--- | :--- |
 | **Sampling Frequency (fs)** | **16,000 Hz** | ITU-T Wideband Speech Standard |
 | **Audio Frame Size** | **128 samples (8.0 ms)** | Low-delay buffering |
 | **Average Processing Time / Frame** | **0.805 ms** | **10× faster than the 8.0 ms frame duration** |
-| **95th Percentile Latency** | **1.329 ms** | Guaranteed real-time streaming without buffer underruns |
-| **Total Algorithmic Latency** | **< 10.0 ms** | Strictly complies with echo-free hearing threshold |
-| **Real-Time Speedup Factor** | **9.9×** | Ample headroom for co-located edge AI tasks |
-| **Peak RAM Footprint** | **91.36 MB** | Low-memory edge gateway compatibility |
-| **ANSI C99 Header Size** | **4.0 KB** | Ultra-compact firmware for bare-metal microcontrollers |
+| **95th Percentile Latency** | **1.329 ms** | Guaranteed real-time streaming without underrun |
+| **Total Algorithmic Latency** | **< 10.0 ms** | Echo-free hearing threshold compliance |
+| **Real-Time Speedup Factor** | **9.9×** | Margin for embedded edge execution |
+| **Peak RAM Footprint** | **91.4 MB** | Low-memory edge compatibility |
+| **ANSI C99 Header Size** | **4.0 KB** | Standalone firmware for microcontrollers |
 
 ---
 
-## 💻 Bare-Metal Embedded C99 Firmware (`models/hearing_aid_dsp.h`)
+## Embedded C99 Firmware (`models/hearing_aid_dsp.h`)
 
-To enable direct flashing onto DSP chips (**Texas Instruments TMS320, ARM Cortex-M4 with CMSIS-DSP, ESP32-S3**), the core algorithms export to an independent C99 header:
+To enable deployment on digital signal processors and microcontrollers (**ARM Cortex-M4 with CMSIS-DSP, ESP32-S3, STM32**), core algorithms export to an independent C99 header:
 
-* **Zero Dynamic Allocation:** 100% stack/static sample-by-sample execution.
-* **MISRA-C Compliant:** No pointer aliasing, deterministic bounds.
-* **Header API Example:**
+* **Zero Dynamic Allocation:** 100% stack/static sample-by-sample execution (no `malloc`).
+* **Header API:**
 ```c
 #include "hearing_aid_dsp.h"
 
-ha_afc_t afc;
-ha_wdrc_t comp;
+HearingAidDSP state;
+hearing_aid_init(&state);
 
-// Initialize
-ha_afc_init(&afc, 0.03f);
-ha_wdrc_init(&comp, -40.0f, 2.0f, -3.0f, 5.0f, 50.0f, 16000.0f);
-
-// Sample-by-sample streaming loop
-float clean_sample = ha_afc_process_sample(&afc, mic_sample, speaker_sample);
-float final_out = ha_wdrc_process_sample(&comp, clean_sample);
+// Process audio frame in real time
+for (int i = 0; i < FRAME_SIZE; ++i) {
+    output[i] = hearing_aid_process_sample(&state, input[i]);
+}
 ```
 
 ---
 
-## 🚀 Quick Start
+## Getting Started
 
 ### 1. Clone the Repository
 ```bash
@@ -108,32 +104,26 @@ cd edge-hearing-aid-dsp
 pip install -r requirements.txt
 ```
 
-### 3. Launch Interactive Streamlit Web Dashboard
-```bash
-streamlit run app.py
-```
-*Allows live playback of noisy vs. enhanced audio, dynamic adjustment of clinical audiogram curves, and testing individual DSP modules.*
-
-### 4. Run CLI Demo & Spectrogram Generation
+### 3. Run Audio Demo & Benchmarks
 ```bash
 python run_demo.py
-```
-*Generates output audio file `data/hearing_aid_processed_output.wav` and spectrogram figure `assets/demo_hearing_aid_spectrogram.png`.*
-
-### 5. Run Hardware Profiling Benchmark
-```bash
 python benchmark.py
+```
+
+### 4. Launch Interactive Web Dashboard
+```bash
+streamlit run app.py
 ```
 
 ---
 
-## 📂 Repository Structure
+## Repository Structure
 
 ```
 edge-hearing-aid-dsp/
 ├── .gitignore
 ├── LICENSE
-├── README.md               # Architecture documentation & benchmark showcase
+├── README.md               # Technical documentation & benchmark showcase
 ├── requirements.txt        # Minimal dependencies
 ├── app.py                  # Interactive Streamlit Web Application
 ├── benchmark.py            # Latency, frame timing, and memory profiling suite
@@ -141,7 +131,7 @@ edge-hearing-aid-dsp/
 ├── assets/
 │   └── demo_hearing_aid_spectrogram.png
 ├── data/
-│   ├── benchmark_speech_noisy.wav       # Synthesized test audio
+│   ├── benchmark_speech_noisy.wav       # Test input audio
 │   └── hearing_aid_processed_output.wav # Enhanced audio output
 ├── models/
 │   └── hearing_aid_dsp.h   # Standalone ANSI C99 firmware header (4 KB)
@@ -161,5 +151,5 @@ edge-hearing-aid-dsp/
 
 ---
 
-## ⚖️ License & Ethical Disclosure
-This project is licensed under the **MIT License**. It is strictly developed for **civilian audiology, assistive healthcare technology, and academic research**.
+## License
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
