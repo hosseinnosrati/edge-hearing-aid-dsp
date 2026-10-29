@@ -95,7 +95,7 @@ for (int i = 0; i < FRAME_SIZE; ++i) {
 
 ### 1. Clone the Repository
 ```bash
-git clone https://github.com/hnosrati0-source/edge-hearing-aid-dsp.git
+git clone https://github.com/hosseinnosrati/edge-hearing-aid-dsp.git
 cd edge-hearing-aid-dsp
 ```
 

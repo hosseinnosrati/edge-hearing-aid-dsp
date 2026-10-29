@@ -25,7 +25,7 @@ st.set_page_config(
 st.title("🦻 Edge-Hearing-Aid-DSP")
 st.markdown(
     "**Real-Time Speech Enhancement, Feedback Cancellation, and Multi-Band Audiogram Equalization** | "
-    "*[GitHub Repository](https://github.com/hnosrati0-source/edge-hearing-aid-dsp)*"
+    "*[GitHub Repository](https://github.com/hosseinnosrati/edge-hearing-aid-dsp)*"
 )
 st.caption("Engineered for ultra-low latency (<10 ms budget) on resource-constrained embedded DSP hardware.")
 
